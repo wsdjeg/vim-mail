@@ -1,5 +1,5 @@
 function! mail#new()
-   let f = tempname()
+   let f = tempname() . '/new_email'
    exe 'edit ' . f
    setf mail
    call setline(1, s:build_header())
