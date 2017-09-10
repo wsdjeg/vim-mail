@@ -22,3 +22,10 @@ function! s:build_header(...) abort
     call add(header, '')
     return header
 endfunction
+
+
+function! mail#list() abort
+    
+endfunction
+
+

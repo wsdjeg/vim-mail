@@ -8,8 +8,10 @@
 
 
 let g:mail_command = 'telnet'
-
 let g:mail_method = 'imap'
 let g:mail_sending_name = 'Shidong Wang'
 let g:mail_sending_address = 'wsdjeg@163.com'
+if !exists('g:mail_directory')
+    let g:mail_directory = expand('~/.vim-mail/')
+endif
 
