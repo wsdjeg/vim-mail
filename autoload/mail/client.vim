@@ -1,4 +1,5 @@
 let s:job_id = 0
+let s:job_noop_timer = ''
 
 let s:JOB = SpaceVim#api#import('job')
 
@@ -26,6 +27,10 @@ function! s:convert(date) abort
     return join([year, m, day], '-')
 endfunction
 
+function! s:noop(id) abort
+    call mail#client#send(mail#command#noop())
+endfunction
+
 let s:_mail_id = -1
 let s:_mail_date = ''
 let s:_mail_from = ''
@@ -33,7 +38,7 @@ let s:_mail_subject = ''
 function! s:parser(data) abort
     if type(a:data) == 3
         for data in a:data
-            echom data
+            call mail#client#logger#info('STDOUT: ' . data)
             if data =~ '^\* \d\+ FETCH '
                 let s:_mail_id = matchstr(data, '\d\+')
             elseif data =~ '^From: '
@@ -58,17 +63,23 @@ endfunction
 
 
 function! s:on_stderr(id, data, event) abort
-    call s:parser(a:data)
+    for data in a:data
+        call mail#client#logger#error('STDERR: ' . data)
+    endfor
 endfunction
 
 function! s:on_exit(id, data, event) abort
     call s:parser(a:data)
     let s:job_id = 0
+    if !empty(s:job_noop_timer)
+        call timer_stop(s:job_noop_timer)
+        let s:job_noop_timer = ''
+    endif
 endfunction
 
 
 function! mail#client#send(command)
-    echom string(a:command)
+    call mail#client#logger#info('Send command: ' . a:command)
     call s:JOB.send(s:job_id, a:command)   
 endfunction
 
@@ -81,6 +92,7 @@ function! mail#client#open()
             call mail#client#send(mail#command#login(username, password))
             call mail#client#send(mail#command#select(mail#client#win#currentDir()))
             call mail#client#send(mail#command#fetch('1:15', 'BODY[HEADER.FIELDS ("DATE" "FROM" "SUBJECT")]'))
+            let s:job_noop_timer = timer_start(20000, function('s:noop'), {'repeat' : -1})
         endif
     endif
     call mail#client#win#open()

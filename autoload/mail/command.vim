@@ -29,3 +29,7 @@ endfunction
 function! mail#command#fetch(id, data)
     return join([s:cmd_prefix, 'FETCH', a:id, a:data], ' ')
 endfunction
+
+function! mail#command#noop()
+    return join([s:cmd_prefix, 'NOOP'], ' ')
+endfunction
