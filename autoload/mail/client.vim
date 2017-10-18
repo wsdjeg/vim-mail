@@ -14,15 +14,41 @@ function! mail#client#connect(ip, port)
 
 endfunction
 
+" Wed, 06 Sep 2017 02:55:41 +0000  ===> 2017-09-06
+let s:__months = {
+            \ 'Sep' : 9,
+            \ }
+function! s:convert(date) abort
+    let info = split(a:date, ' ')
+    let year = info[3]
+    let m = get(s:__months, info[2], 00)
+    let day = len(info[1]) == 1 ? '0' . info[1] : info[1]
+    return join([year, m, day], '-')
+endfunction
+
+let s:_mail_id = -1
+let s:_mail_date = ''
+let s:_mail_from = ''
+let s:_mail_subject = ''
 function! s:parser(data) abort
-    echom string(a:data)
-    " if type(a:data) == 3
-    "     for data in a:data
-    "         echom data
-    "     endfor
-    " else
-    "     echom a:data
-    " endif
+    if type(a:data) == 3
+        for data in a:data
+            echom data
+            if data =~ '^\* \d\+ FETCH '
+                let s:_mail_id = matchstr(data, '\d\+')
+            elseif data =~ '^From: '
+                let s:_mail_from = substitute(data, '^From: ', '', 'g')
+                let s:_mail_from .= repeat(' ', 50 - len(s:_mail_from))
+            elseif data =~ '^Date: '
+                let s:_mail_date = s:convert(substitute(data, '^Date: ', '', 'g'))
+            elseif data =~ '^Subject: '
+                let s:_mail_subject = substitute(data, '^Subject: ', '', 'g')
+                call mail#client#mailbox#updatedir(s:_mail_id, s:_mail_from, s:_mail_date, s:_mail_subject, mail#client#win#currentDir())
+            endif
+        endfor
+    else
+        echom a:data
+    endif
 endfunction
 
 function! s:on_stdout(id, data, event) abort
@@ -54,7 +80,7 @@ function! mail#client#open()
             call mail#client#connect('imap.163.com', 143)
             call mail#client#send(mail#command#login(username, password))
             call mail#client#send(mail#command#select(mail#client#win#currentDir()))
-            call mail#client#send(mail#command#fetch('1:15', 'BODY[HEADER.FIELDS ("DATA" "FROM" "SUBJECT")]'))
+            call mail#client#send(mail#command#fetch('1:15', 'BODY[HEADER.FIELDS ("DATE" "FROM" "SUBJECT")]'))
         endif
     endif
     call mail#client#win#open()

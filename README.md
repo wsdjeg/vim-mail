@@ -6,7 +6,7 @@ manager mail in vim
 
 ## screenshort
 
-![new mail](https://user-images.githubusercontent.com/13142418/30249663-25e67180-9673-11e7-857b-755ca1aa689a.png)
+![Mail list](https://user-images.githubusercontent.com/13142418/31721165-3b8d93f6-b44b-11e7-8be4-f62180c4f762.png)
 
 ## usage
 
