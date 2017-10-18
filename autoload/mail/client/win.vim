@@ -8,6 +8,7 @@ function! mail#client#win#open()
         split __VIM_MAIL__
         let s:bufnr = bufnr('%')
         setlocal buftype=nofile nobuflisted nolist noswapfile nowrap cursorline nospell nomodifiable
+        setfiletype VimMailClient
     endif
 endfunction
 
