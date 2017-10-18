@@ -27,9 +27,22 @@ endfunction
 
 function! s:on_exit(id, data, event) abort
     echom string(a:data)
+    let s:job_id = 0
 endfunction
 
 
 function! mail#client#send(command)
     call s:JOB.send(s:job_id, a:command)   
+endfunction
+
+function! mail#client#open()
+    if s:job_id == 0
+        let username = input('USERNAME: ')
+        let password = input('PASSWORD: ')
+        if !empty(username) && !empty(password)
+            call mail#client#connect('imap.163.com', 143)
+            call mail#client#send(mail#command#login(username, password))
+        endif
+    endif
+    call mail#client#win#open()
 endfunction

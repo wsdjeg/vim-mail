@@ -1,4 +1,4 @@
-# vim-mail
+# vim-mail[WIP]
 
 manager mail in vim
 
@@ -8,8 +8,4 @@ manager mail in vim
 
 ## usage
 
-- `call mail#new()`: edit new email
-
-- `call mail#list()`: list all emails
-
-- `call mail#send()`: send current mail
+- `call mail#client#open()`: open vim-mail windows
