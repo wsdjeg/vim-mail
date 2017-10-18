@@ -2,6 +2,8 @@
 
 manager mail in vim
 
+[![](https://spacevim.org/img/build-with-SpaceVim.svg)](https://spacevim.org)
+
 ## screenshort
 
 ![new mail](https://user-images.githubusercontent.com/13142418/30249663-25e67180-9673-11e7-857b-755ca1aa689a.png)
