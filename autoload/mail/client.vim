@@ -35,6 +35,8 @@ let s:_mail_id = -1
 let s:_mail_date = ''
 let s:_mail_from = ''
 let s:_mail_subject = ''
+let s:mail_unseen = 0
+
 function! s:parser(data) abort
     if type(a:data) == 3
         for data in a:data
@@ -49,6 +51,8 @@ function! s:parser(data) abort
             elseif data =~ '^Subject: '
                 let s:_mail_subject = substitute(data, '^Subject: ', '', 'g')
                 call mail#client#mailbox#updatedir(s:_mail_id, s:_mail_from, s:_mail_date, s:_mail_subject, mail#client#win#currentDir())
+            elseif data =~ '* STATUS INBOX'
+                let s:mail_unseen = matchstr(data, '\d\+')
             endif
         endfor
     else
@@ -92,8 +96,16 @@ function! mail#client#open()
             call mail#client#send(mail#command#login(username, password))
             call mail#client#send(mail#command#select(mail#client#win#currentDir()))
             call mail#client#send(mail#command#fetch('1:15', 'BODY[HEADER.FIELDS ("DATE" "FROM" "SUBJECT")]'))
+            call mail#client#send(mail#command#status('INBOX', '["RECENT"]'))
             let s:job_noop_timer = timer_start(20000, function('s:noop'), {'repeat' : -1})
         endif
     endif
     call mail#client#win#open()
+endfunction
+
+
+function! mail#client#unseen()
+
+    return s:mail_unseen
+
 endfunction

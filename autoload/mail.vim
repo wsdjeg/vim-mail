@@ -28,4 +28,10 @@ function! mail#list() abort
     
 endfunction
 
+" number of unseen message in INBOX
+
+function! mail#statusline()
+ return mail#client#unseen()
+endfunction
+
 
